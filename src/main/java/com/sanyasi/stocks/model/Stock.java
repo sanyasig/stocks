@@ -13,16 +13,16 @@ public class Stock {
 	private Double lastDividend;
 	private Double fixedDividend;
 	private Double parValue;
-	private Double tickerPrice;
 	
-	public Stock(StockType type, StockSymbol symbol, Double lastDividend, Double fixedDividend, Double parValue,
-			Double tickerPrice) {
+	public Stock(StockType type, StockSymbol symbol, Double lastDividend, Double fixedDividend, Double parValue) {
 		this.type = type;
 		this.symbol = symbol;
 		this.lastDividend = lastDividend;
 		this.fixedDividend = fixedDividend;
 		this.parValue = parValue;
-		this.tickerPrice = tickerPrice;
+	}
+
+	public Stock() {
 	}
 
 	public StockType getType() {
@@ -63,14 +63,6 @@ public class Stock {
 	
 	public void setParValue(Double parValue) {
 		this.parValue = parValue;
-	}
-	
-	public Double getTickerPrice() {
-		return tickerPrice;
-	}
-	
-	public void setTickerPrice(Double tickerPrice) {
-		this.tickerPrice = tickerPrice;
 	}
 	
 }

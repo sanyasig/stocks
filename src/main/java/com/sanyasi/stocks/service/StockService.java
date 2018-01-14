@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.sanyasi.stocks.exception.StockException;
 import com.sanyasi.stocks.model.Stock;
+import com.sanyasi.stocks.model.StockSymbol;
 import com.sanyasi.stocks.model.Trade;
 
 /**
@@ -16,10 +17,11 @@ public interface StockService {
 	/**
 	 * 
 	 * @param stock Divided to calculated for 
+	 * @param marketPrice 
 	 * @return dividentYeild
 	 * @throws StockException if the details in the stock are invalid
 	 */
-	Double computeDividendYield(Stock stock) throws StockException;
+	Double computeDividendYield(Stock stock, double marketPrice) throws StockException;
 
     /**
      * 
@@ -27,7 +29,7 @@ public interface StockService {
      * @return pE ratio
      * @throws StockException if the details in the stock are invalid
      */
-	Double computePERatio(Stock stock) throws StockException;
+	Double computePERatio(Stock stock, double marketValue) throws StockException;
 	
 	/**
 	 * 
@@ -50,4 +52,6 @@ public interface StockService {
      * @return GRBCE share index
      */
     Double computeGBCEShareIndex();
+
+	Stock getStockBySymbol(StockSymbol stockSymbol);
 }

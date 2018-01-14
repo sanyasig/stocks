@@ -24,6 +24,9 @@ public class Trade {
 		this.price = price;
 	}
 	
+	public Trade() {
+	}
+
 	public Date getDate() {
 		return date;
 	}
