@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.sanyasi.stocks.Utils;
 import com.sanyasi.stocks.exception.StockException;
 import com.sanyasi.stocks.model.Stock;
 import com.sanyasi.stocks.model.StockSymbol;
@@ -12,11 +13,11 @@ import com.sanyasi.stocks.model.Trade;
 
 public class StockServiceImpl implements StockService {
 	 private List<Stock> stocks;
-	 private  List<Trade> trades = new ArrayList();
+	 private  List<Trade> trades;
 	 
 	public StockServiceImpl() {
 		stocks = buildStocks();
-		trades = new ArrayList();
+		trades = new ArrayList<Trade>();
 	}
 
 	@Override
@@ -25,10 +26,8 @@ public class StockServiceImpl implements StockService {
 		if(marketValue != 0) {
 			if(stock.getType().equals(StockType.COMMOM)) {
 				divident = stock.getLastDividend()/marketValue;
-				stock.setLastDividend(divident);
 			} else {
 				divident = (stock.getFixedDividend() * stock.getParValue()) / marketValue;
-				stock.setLastDividend(divident);
 			}
 		}
 		return divident;
@@ -37,11 +36,15 @@ public class StockServiceImpl implements StockService {
 	@Override
 	public Double computePERatio(Stock stock, double marketValue) throws StockException {
 		double peRatio = 0;
-		try {
-			double divident = computeDividendYield(stock, marketValue);
-			peRatio = marketValue/divident;
-		} catch (NumberFormatException e) {
-			throw new StockException("Error calculating PE Ratio");
+		if(marketValue != 0) {
+			try {
+				double divident = computeDividendYield(stock, marketValue);
+				if(divident != 0) {
+					peRatio = marketValue/divident;
+				}
+			} catch (NumberFormatException e) {
+				throw new StockException("Error calculating PE Ratio");
+			}
 		}
 		return peRatio;
 		
@@ -54,12 +57,36 @@ public class StockServiceImpl implements StockService {
 
 	@Override
 	public Double computeStockPrice(Stock stock, Date lastDateTimestamp) throws StockException {
-		return null;
+		long endTime = lastDateTimestamp.getTime();
+		long startTime = endTime - (15 * 60 *1000);
+		double topValues = 0;
+		double totalQuantity = 0;
+		
+		for (Trade eachTrade : trades) {
+			if (eachTrade.getStock().getSymbol().getName().equalsIgnoreCase(stock.getSymbol().getName())) {
+				long currTTime  = eachTrade.getDate().getTime();
+				if((currTTime < endTime) && (currTTime > startTime)) {
+					topValues += (double)(eachTrade.getQuantity() * eachTrade.getPrice().doubleValue());
+					totalQuantity += (double) eachTrade.getQuantity();
+				}
+			}
+		}
+		
+		double stockPrice = 0;
+		if (totalQuantity != 0) {
+			stockPrice =  topValues/totalQuantity;
+		}
+		
+		return stockPrice;
 	}
 
 	@Override
 	public Double computeGBCEShareIndex() {
-		return null;
+		ArrayList<Double> tPrices = new ArrayList<>();
+		for (Trade eachTrade : trades) {
+			tPrices.add(eachTrade.getPrice().doubleValue());
+		}
+		return Utils.computeGeometricValue(tPrices);
 	}
 	
 	@Override
@@ -74,6 +101,11 @@ public class StockServiceImpl implements StockService {
 		return stock;
 	}
 	
+	
+	@Override
+	public List<Trade> getAllRecordedTrade () {
+		return trades;
+	}
 	
 	private ArrayList<Stock> buildStocks () {
 		

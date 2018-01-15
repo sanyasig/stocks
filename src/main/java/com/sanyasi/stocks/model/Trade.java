@@ -15,6 +15,7 @@ public class Trade {
 	private int quantity;
 	private Indicator indicator;
 	private BigDecimal price;
+	private Stock stock;
 	
 	public Trade(Date date, int quantity, Indicator indicator, BigDecimal price) {
 		super();
@@ -57,6 +58,14 @@ public class Trade {
 	
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+
+	public Stock getStock() {
+		return stock;
+	}
+
+	public void setStock(Stock stock) {
+		this.stock = stock;
 	}
 	
 }
