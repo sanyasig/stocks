@@ -27,46 +27,40 @@ public class Main {
 
 	private static void readAndProcessRrade(Scanner in, StockService stockService) throws StockException {
 		System.out.println("Please select on of the optoins ");
-		
-		while(true) {
-			
+
+		while (true) {
 			Utils.printMainMenu();
-             
-            int userInput = 0;
-			while (in.hasNext()) {
-				 if (in.hasNextInt()) {
-					 userInput = in.nextInt();
-					 break;
-                  } 
-			}
-            
-             if(userInput < 1 || userInput >3 ) {
-            	 System.out.println("Invalid input selected, try again ");
-             }
-             else  {
-            	 switch (userInput) {
-				case 1:
-					//calculate all the details required to
-					calulateValues(in, stockService);
-					break;
-				case 2:
-					// GBSE all Share index
-					System.out.println("GBCE All Share Index is : " 
-								+ stockService.computeGBCEShareIndex());
-						break;
-				case 3:
-					//exit
-					System.out.println("Good Bye and May the Force be with you");
-					System.exit(0);
-					break;
-				default:
-					break;
+			int userInput = 0;
+			do {
+				while (!in.hasNextInt()) {
+					System.out.println("Invalid input selected, try again !");
+					Utils.printMainMenu();
+					in.next();
 				}
-             }
+				userInput = in.nextInt();
+				break;
+			} while (true);
+
+			switch (userInput) {
+			case 1:
+				// calculate all the details required to
+				calulateValues(in, stockService);
+				break;
+			case 2:
+				// GBSE all Share index
+				System.out.println("GBCE All Share Index is : " + stockService.computeGBCEShareIndex());
+				break;
+			case 3:
+				// exit
+				System.out.println("Good Bye and May the Force be with you");
+				System.exit(0);
+				break;
+			default:
+				break;
+			}
 		}
-		
 	}
- 
+
 	private static void calulateValues(Scanner in, StockService stockService) throws StockException {
 
 		Stock stock = getUserStock(in, stockService);
@@ -75,27 +69,35 @@ public class Main {
 			Utils.printStockActoinMenu();
 
 			int userInput = 0;
-			while (in.hasNext()) {
-				if (in.hasNextInt()) {
-					userInput = in.nextInt();
-					break;
-				}
-			}
-			if(userInput  < 1 || userInput > 6 ) {
-				System.out.println("PLease select a valid option");
-			} else {
+			boolean validInput = false;
+			while(!validInput) {
 
-			switch (userInput) {
+			  do {
+	               while (!in.hasNextInt()) {
+	                    System.out.println("Invalid input selected, try again !");
+	                    Utils.printStockActoinMenu();
+	                    in.next(); 
+	                }
+	                userInput = in.nextInt();
+	                if(userInput > 0 || userInput < 7) {
+	                	System.out.println("Invalid Input");
+	                	Utils.printStockActoinMenu();
+	                }
+	                break;
+	            } while (true);
+				switch (userInput) {
 			
 				case 1:
 					double marketPrice = Utils.readMarketProcice(in);
 					Double divident = stockService.computeDividendYield(stock, marketPrice);
 					System.out.println("Divident Yeild : " + divident);
+					validInput = true;
 					break;
 	
 				case 2:
 					marketPrice = Utils.readMarketProcice(in);
 					System.out.println("P/E Ration  : " + stockService.computePERatio(stock, marketPrice));
+					validInput = true;
 					break;
 				// buy
 				case 3:
@@ -103,6 +105,7 @@ public class Main {
 					trade.setIndicator(Indicator.BUY);
 					trade.setStock(stock);
 					stockService.recordTrade(trade);
+					validInput = true;
 					break;	
 			    // sell
 				case 4:
@@ -110,22 +113,20 @@ public class Main {
 					sellTrade.setIndicator(Indicator.SELL);
 					sellTrade.setStock(stock);
 					stockService.recordTrade(sellTrade);
+					validInput = true;
 					break;	
 				case 5:
 					System.out.println("Stock Price in Last 15 Minutes is" + stockService.computeStockPrice(stock, new Date()));
+					validInput = true;
 					break;
 				case 6:
 					return;
 				default:
 					break;
-			}
-			}
-
-		} else {
-			System.out.println("Entered Stock Type Does not Exists");
+				}
 		}
-
-	}
+		}
+			}
 
 	private static Stock getUserStock(Scanner in, StockService stockService) {
 		System.out.println("Please Key-in the Symbol of a Stock");
